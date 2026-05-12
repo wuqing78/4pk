@@ -62,7 +62,7 @@ export default function Home() {
           JSON.stringify(error, null, 2)
         )
         return
-
+ 
       }
 
       if (!data || data.length < 2)
