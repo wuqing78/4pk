@@ -14,12 +14,10 @@ type Poem = {
 }
 
 function getTitle(content: string) {
-
   return content
     .split('\n')[0]
     .replace(/[#《》]/g, '')
     .slice(0, 20)
-
 }
 
 export default function Home() {
@@ -45,7 +43,7 @@ export default function Home() {
   const [isImporting, setIsImporting] =
     useState(false)
 
-  // 从 Supabase 读取
+  // 从 Supabase 读取数据
 
   useEffect(() => {
 
@@ -58,14 +56,12 @@ export default function Home() {
 
       if (error) {
 
-        console.error(
-          JSON.stringify(error, null, 2)
-        )
+        console.error(error)
         return
 
       }
 
-      if (!data || data.length < 2)
+      if (!data || data.length === 0)
         return
 
       setAllPoems(data)
@@ -79,9 +75,7 @@ export default function Home() {
 
       const randomLeft =
         data[
-          Math.floor(
-            Math.random() * data.length
-          )
+          Math.floor(Math.random() * data.length)
         ]
 
       const remaining =
@@ -208,8 +202,7 @@ export default function Home() {
 
   async function submitPoem() {
 
-    if (!newPoem.trim())
-      return
+    if (!newPoem.trim()) return
 
     const { data, error } =
       await supabase
@@ -264,13 +257,11 @@ export default function Home() {
     const file =
       event.target.files?.[0]
 
-    if (!file)
-      return
+    if (!file) return
 
     setIsImporting(true)
 
-    const reader =
-      new FileReader()
+    const reader = new FileReader()
 
     reader.onload = async (e) => {
 
@@ -313,7 +304,7 @@ export default function Home() {
 
       updateTopPoem(updated)
 
-      if (updated.length >= 2) {
+      if (!leftPoem && updated.length >= 2) {
 
         const randomLeft =
           updated[
@@ -348,42 +339,36 @@ export default function Home() {
 
   }
 
-  // 数据库为空
-
   if (!leftPoem || !rightPoem) {
 
     return (
 
       <main className="min-h-screen bg-neutral-100 flex flex-col items-center justify-center px-6">
 
-        <h1 className="text-7xl font-bold mb-10">
+        <h1 className="text-6xl font-bold mb-10">
           4PK
         </h1>
 
-        <label
-          className="
-            border-2 border-black
-            px-8 py-5
-            text-xl font-bold
-            hover:bg-black
-            hover:text-white
-            transition
-            cursor-pointer
-          "
-        >
+        <div className="mb-8">
 
-          导入 TXT
+          <label
+            className="border-2 border-black px-8 py-4 text-lg font-bold hover:bg-black hover:text-white transition cursor-pointer"
+          >
 
-          <input
-            type="file"
-            accept=".txt"
-            onChange={importTxtFile}
-            className="hidden"
-          />
+            导入 TXT
 
-        </label>
+            <input
+              type="file"
+              accept=".txt"
+              onChange={importTxtFile}
+              className="hidden"
+            />
 
-        <div className="mt-8 text-neutral-500">
+          </label>
+
+        </div>
+
+        <div className="text-neutral-500 mt-4">
           请先导入诗歌 TXT 文件
         </div>
 
@@ -399,8 +384,6 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* 顶部 */}
-
         <div className="flex items-center justify-between mb-10">
 
           <h1 className="text-6xl font-bold tracking-tight">
@@ -410,14 +393,7 @@ export default function Home() {
           <div className="flex gap-4">
 
             <label
-              className="
-                border border-black
-                px-5 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-                cursor-pointer
-              "
+              className="border border-black px-5 py-3 hover:bg-black hover:text-white transition cursor-pointer"
             >
 
               导入 TXT
@@ -435,13 +411,7 @@ export default function Home() {
               onClick={() =>
                 setShowForm(!showForm)
               }
-              className="
-                border border-black
-                px-5 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-              "
+              className="border border-black px-5 py-3 hover:bg-black hover:text-white transition"
             >
               ＋ 投稿
             </button>
@@ -450,7 +420,13 @@ export default function Home() {
 
         </div>
 
-        {/* 投稿 */}
+        {isImporting && (
+
+          <div className="text-sm text-neutral-500 mb-6">
+            导入中...
+          </div>
+
+        )}
 
         {showForm && (
 
@@ -462,29 +438,12 @@ export default function Home() {
                 setNewPoem(e.target.value)
               }
               placeholder="写下你的诗..."
-              className="
-                w-full
-                border border-black
-                bg-white
-                p-6
-                min-h-[180px]
-                resize-none
-                outline-none
-                text-lg
-                leading-9
-              "
+              className="w-full border border-black bg-white p-6 min-h-[180px] resize-none outline-none text-lg leading-9"
             />
 
             <button
               onClick={submitPoem}
-              className="
-                mt-4
-                border border-black
-                px-6 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-              "
+              className="mt-4 border border-black px-6 py-3 hover:bg-black hover:text-white transition"
             >
               加入战场
             </button>
@@ -492,8 +451,6 @@ export default function Home() {
           </div>
 
         )}
-
-        {/* PK */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
@@ -512,16 +469,13 @@ export default function Home() {
                 scale: 1
               }}
               exit={{
-                opacity: 0
+                opacity: 0,
+                y: -20
               }}
               transition={{
-                duration: 0.45
+                duration: 0.5
               }}
-              className="
-                border border-black
-                bg-white
-                p-8
-              "
+              className="border border-black bg-white p-8"
             >
 
               <p className="whitespace-pre-line text-2xl leading-[2.2]">
@@ -579,16 +533,13 @@ export default function Home() {
                 scale: 1
               }}
               exit={{
-                opacity: 0
+                opacity: 0,
+                y: -20
               }}
               transition={{
-                duration: 0.45
+                duration: 0.5
               }}
-              className="
-                border border-black
-                bg-white
-                p-8
-              "
+              className="border border-black bg-white p-8"
             >
 
               <p className="whitespace-pre-line text-2xl leading-[2.2]">
@@ -632,8 +583,6 @@ export default function Home() {
           </AnimatePresence>
 
         </div>
-
-        {/* 底部 */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
 
@@ -697,13 +646,7 @@ export default function Home() {
                   <Link
                     href={`/poem/${poem.id}`}
                     key={poem.id}
-                    className="
-                      block
-                      border-b border-neutral-300
-                      pb-3
-                      hover:opacity-70
-                      transition
-                    "
+                    className="block border-b border-neutral-300 pb-3 hover:opacity-70 transition"
                   >
 
                     <div className="flex items-center justify-between">
