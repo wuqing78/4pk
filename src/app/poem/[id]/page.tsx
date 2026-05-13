@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Poem = {
@@ -13,363 +13,56 @@ type Poem = {
   losses: number
 }
 
-function getTitle(content: string) {
-  return content
-    .split('\n')[0]
-    .replace(/[#《》]/g, '')
-    .slice(0, 20)
-}
+export default function PoemPage() {
 
-export default function Home() {
+  const params = useParams()
 
-  const [allPoems, setAllPoems] =
-    useState<Poem[]>([])
-
-  const [topPoem, setTopPoem] =
+  const [poem, setPoem] =
     useState<Poem | null>(null)
 
-  const [leftPoem, setLeftPoem] =
-    useState<Poem | null>(null)
-
-  const [rightPoem, setRightPoem] =
-    useState<Poem | null>(null)
-
-  const [showForm, setShowForm] =
-    useState(false)
-
-  const [newPoem, setNewPoem] =
-    useState('')
-
-  const [isImporting, setIsImporting] =
-    useState(false)
-
-  // 从 Supabase 读取数据
+  const [loading, setLoading] =
+    useState(true)
 
   useEffect(() => {
 
-    async function loadPoems() {
+    async function loadPoem() {
 
       const { data, error } =
         await supabase
           .from('poems')
           .select('*')
+          .eq('id', params.id)
+          .single()
 
       if (error) {
 
         console.error(error)
+        setLoading(false)
         return
 
       }
 
-      if (!data || data.length === 0)
-        return
-
-      setAllPoems(data)
-
-      const top =
-        [...data].sort(
-          (a, b) => b.rating - a.rating
-        )[0]
-
-      setTopPoem(top)
-
-      const randomLeft =
-        data[
-          Math.floor(Math.random() * data.length)
-        ]
-
-      const remaining =
-        data.filter(
-          (p) => p.id !== randomLeft.id
-        )
-
-      const randomRight =
-        remaining[
-          Math.floor(
-            Math.random() * remaining.length
-          )
-        ]
-
-      setLeftPoem(randomLeft)
-      setRightPoem(randomRight)
+      setPoem(data)
+      setLoading(false)
 
     }
 
-    loadPoems()
+    loadPoem()
 
-  }, [])
+  }, [params.id])
 
-  function updateTopPoem(updated: Poem[]) {
-
-    const top =
-      [...updated].sort(
-        (a, b) => b.rating - a.rating
-      )[0]
-
-    setTopPoem(top)
-
+  if (loading) {
+    return null
   }
 
-  async function vote(
-    winner: Poem,
-    loser: Poem
-  ) {
-
-    const updatedWinner = {
-      ...winner,
-      rating: winner.rating + 8,
-      wins: winner.wins + 1
-    }
-
-    const updatedLoser = {
-      ...loser,
-      rating: loser.rating - 8,
-      losses: loser.losses + 1
-    }
-
-    await supabase
-      .from('poems')
-      .update({
-        rating: updatedWinner.rating,
-        wins: updatedWinner.wins
-      })
-      .eq('id', winner.id)
-
-    await supabase
-      .from('poems')
-      .update({
-        rating: updatedLoser.rating,
-        losses: updatedLoser.losses
-      })
-      .eq('id', loser.id)
-
-    const updated =
-      allPoems.map((poem) => {
-
-        if (poem.id === winner.id)
-          return updatedWinner
-
-        if (poem.id === loser.id)
-          return updatedLoser
-
-        return poem
-
-      })
-
-    setAllPoems(updated)
-
-    updateTopPoem(updated)
-
-    const nextPool =
-      updated.filter(
-        (p) => p.id !== updatedWinner.id
-      )
-
-    const sortedPool =
-      nextPool.sort((a, b) => {
-
-        return Math.abs(
-          a.rating - updatedWinner.rating
-        ) - Math.abs(
-          b.rating - updatedWinner.rating
-        )
-
-      })
-
-    const candidates =
-      sortedPool.slice(0, 5)
-
-    const next =
-      candidates[
-        Math.floor(
-          Math.random() * candidates.length
-        )
-      ]
-
-    if (winner.id === leftPoem?.id) {
-
-      setLeftPoem(updatedWinner)
-      setRightPoem(next)
-
-    } else {
-
-      setRightPoem(updatedWinner)
-      setLeftPoem(next)
-
-    }
-
-  }
-
-  async function submitPoem() {
-
-    if (!newPoem.trim()) return
-
-    const { data, error } =
-      await supabase
-        .from('poems')
-        .insert([
-          {
-            content: newPoem,
-            rating: 1200,
-            wins: 0,
-            losses: 0
-          }
-        ])
-        .select()
-
-    if (error) {
-
-      console.error(error)
-      return
-
-    }
-
-    const poem = data[0]
-
-    const updated = [
-      ...allPoems,
-      poem
-    ]
-
-    setAllPoems(updated)
-
-    updateTopPoem(updated)
-
-    if (!leftPoem) {
-
-      setLeftPoem(poem)
-
-    } else if (!rightPoem) {
-
-      setRightPoem(poem)
-
-    }
-
-    setNewPoem('')
-    setShowForm(false)
-
-  }
-
-  async function importTxtFile(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-
-    const file =
-      event.target.files?.[0]
-
-    if (!file) return
-
-    setIsImporting(true)
-
-    const reader = new FileReader()
-
-    reader.onload = async (e) => {
-
-      const text =
-        e.target?.result as string
-
-      const poems =
-        text
-          .split('===')
-          .map((p) => p.trim())
-          .filter(Boolean)
-
-      const imported =
-        poems.map((content) => ({
-          content,
-          rating: 1200,
-          wins: 0,
-          losses: 0
-        }))
-
-      const { data, error } =
-        await supabase
-          .from('poems')
-          .insert(imported)
-          .select()
-
-      if (error) {
-
-        console.error(error)
-        return
-
-      }
-
-      const updated = [
-        ...allPoems,
-        ...data
-      ]
-
-      setAllPoems(updated)
-
-      updateTopPoem(updated)
-
-      if (!leftPoem && updated.length >= 2) {
-
-        const randomLeft =
-          updated[
-            Math.floor(
-              Math.random() * updated.length
-            )
-          ]
-
-        const remaining =
-          updated.filter(
-            (p) => p.id !== randomLeft.id
-          )
-
-        const randomRight =
-          remaining[
-            Math.floor(
-              Math.random() *
-              remaining.length
-            )
-          ]
-
-        setLeftPoem(randomLeft)
-        setRightPoem(randomRight)
-
-      }
-
-      setIsImporting(false)
-
-    }
-
-    reader.readAsText(file)
-
-  }
-
-  if (!leftPoem || !rightPoem) {
+  if (!poem) {
 
     return (
 
-      <main className="min-h-screen bg-neutral-100 flex flex-col items-center justify-center px-6">
+      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
 
-        <h1 className="text-6xl font-bold mb-10">
-          4PK
-        </h1>
-
-        <div className="mb-8">
-
-          <label
-            className="border-2 border-black px-8 py-4 text-lg font-bold hover:bg-black hover:text-white transition cursor-pointer"
-          >
-
-            导入 TXT
-
-            <input
-              type="file"
-              accept=".txt"
-              onChange={importTxtFile}
-              className="hidden"
-            />
-
-          </label>
-
-        </div>
-
-        <div className="text-neutral-500 mt-4">
-          请先导入诗歌 TXT 文件
+        <div className="text-neutral-500">
+          poem not found
         </div>
 
       </main>
@@ -380,298 +73,52 @@ export default function Home() {
 
   return (
 
-    <main className="min-h-screen bg-neutral-100 text-black px-6 py-12">
+    <main className="min-h-screen bg-neutral-100 text-black px-6 py-16">
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-3xl mx-auto">
 
-        <div className="flex items-center justify-between mb-10">
+        <Link
+          href="/"
+          className="
+            inline-block
+            mb-12
+            text-sm
+            hover:opacity-60
+            transition
+          "
+        >
+          ← back
+        </Link>
 
-          <h1 className="text-6xl font-bold tracking-tight">
-            4PK
-          </h1>
+        <div className="border border-black bg-white p-10">
 
-          <div className="flex gap-4">
-
-            <label
-              className="border border-black px-5 py-3 hover:bg-black hover:text-white transition cursor-pointer"
-            >
-
-              导入 TXT
-
-              <input
-                type="file"
-                accept=".txt"
-                onChange={importTxtFile}
-                className="hidden"
-              />
-
-            </label>
-
-            <button
-              onClick={() =>
-                setShowForm(!showForm)
-              }
-              className="border border-black px-5 py-3 hover:bg-black hover:text-white transition"
-            >
-              ＋ 投稿
-            </button>
-
+          <div className="whitespace-pre-line text-3xl leading-[2.2]">
+            {poem.content}
           </div>
 
-        </div>
+          <div className="mt-12 flex gap-12">
 
-        {isImporting && (
+            <div>
 
-          <div className="text-sm text-neutral-500 mb-6">
-            导入中...
-          </div>
-
-        )}
-
-        {showForm && (
-
-          <div className="mb-10 max-w-2xl">
-
-            <textarea
-              value={newPoem}
-              onChange={(e) =>
-                setNewPoem(e.target.value)
-              }
-              placeholder="写下你的诗..."
-              className="w-full border border-black bg-white p-6 min-h-[180px] resize-none outline-none text-lg leading-9"
-            />
-
-            <button
-              onClick={submitPoem}
-              className="mt-4 border border-black px-6 py-3 hover:bg-black hover:text-white transition"
-            >
-              加入战场
-            </button>
-
-          </div>
-
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          <AnimatePresence mode="wait">
-
-            <motion.div
-              key={leftPoem.id + leftPoem.rating}
-              initial={{
-                opacity: 0,
-                y: 30,
-                scale: 0.96
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1
-              }}
-              exit={{
-                opacity: 0,
-                y: -20
-              }}
-              transition={{
-                duration: 0.5
-              }}
-              className="border border-black bg-white p-8"
-            >
-
-              <p className="whitespace-pre-line text-2xl leading-[2.2]">
-                {leftPoem.content}
-              </p>
-
-              <div className="mt-10 flex items-center justify-between">
-
-                <div>
-
-                  <div className="text-sm text-neutral-500">
-                    Rating {leftPoem.rating}
-                  </div>
-
-                  <div className="text-sm text-neutral-500 mt-1">
-                    {leftPoem.wins} 胜 / {leftPoem.losses} 负
-                  </div>
-
-                </div>
-
-                <button
-                  onClick={() =>
-                    vote(leftPoem, rightPoem)
-                  }
-                  className="
-                    border-2 border-black
-                    px-8 py-4
-                    text-lg font-bold
-                    hover:bg-black
-                    hover:text-white
-                    transition
-                  "
-                >
-                  ← 选这首
-                </button>
-
+              <div className="text-sm text-neutral-500 mb-2">
+                Rating
               </div>
 
-            </motion.div>
-
-          </AnimatePresence>
-
-          <AnimatePresence mode="wait">
-
-            <motion.div
-              key={rightPoem.id + rightPoem.rating}
-              initial={{
-                opacity: 0,
-                y: 30,
-                scale: 0.96
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1
-              }}
-              exit={{
-                opacity: 0,
-                y: -20
-              }}
-              transition={{
-                duration: 0.5
-              }}
-              className="border border-black bg-white p-8"
-            >
-
-              <p className="whitespace-pre-line text-2xl leading-[2.2]">
-                {rightPoem.content}
-              </p>
-
-              <div className="mt-10 flex items-center justify-between">
-
-                <button
-                  onClick={() =>
-                    vote(rightPoem, leftPoem)
-                  }
-                  className="
-                    border-2 border-black
-                    px-8 py-4
-                    text-lg font-bold
-                    hover:bg-black
-                    hover:text-white
-                    transition
-                  "
-                >
-                  选这首 →
-                </button>
-
-                <div className="text-right">
-
-                  <div className="text-sm text-neutral-500">
-                    Rating {rightPoem.rating}
-                  </div>
-
-                  <div className="text-sm text-neutral-500 mt-1">
-                    {rightPoem.wins} 胜 / {rightPoem.losses} 负
-                  </div>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-
-          </AnimatePresence>
-
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
-
-          {topPoem && (
-
-            <div className="border border-black bg-white p-8">
-
-              <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
-                WORLD #1
-              </div>
-
-              <p className="text-2xl leading-[2] whitespace-pre-line">
-                {topPoem.content}
-              </p>
-
-              <div className="mt-8 flex gap-10">
-
-                <div>
-
-                  <div className="text-sm text-neutral-500 mb-2">
-                    Rating
-                  </div>
-
-                  <div className="text-3xl font-bold">
-                    {topPoem.rating}
-                  </div>
-
-                </div>
-
-                <div>
-
-                  <div className="text-sm text-neutral-500 mb-2">
-                    Record
-                  </div>
-
-                  <div className="text-3xl font-bold">
-                    {topPoem.wins} / {topPoem.losses}
-                  </div>
-
-                </div>
-
+              <div className="text-4xl font-bold">
+                {poem.rating}
               </div>
 
             </div>
 
-          )}
+            <div>
 
-          <div className="border border-black bg-white p-6">
+              <div className="text-sm text-neutral-500 mb-2">
+                Record
+              </div>
 
-            <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-500 mb-6">
-              Top 20
-            </h2>
-
-            <div className="space-y-4">
-
-              {[...allPoems]
-                .sort((a, b) => b.rating - a.rating)
-                .slice(0, 20)
-                .map((poem, index) => (
-
-                  <Link
-                    href={`/poem/${poem.id}`}
-                    key={poem.id}
-                    className="block border-b border-neutral-300 pb-3 hover:opacity-70 transition"
-                  >
-
-                    <div className="flex items-center justify-between">
-
-                      <div className="flex gap-3 items-center">
-
-                        <div className="text-sm font-bold">
-                          #{index + 1}
-                        </div>
-
-                        <div className="text-sm truncate max-w-[180px]">
-                          {getTitle(poem.content)}
-                        </div>
-
-                      </div>
-
-                      <div className="text-xs text-neutral-500">
-                        {poem.rating}
-                      </div>
-
-                    </div>
-
-                  </Link>
-
-                ))}
+              <div className="text-4xl font-bold">
+                {poem.wins} / {poem.losses}
+              </div>
 
             </div>
 
