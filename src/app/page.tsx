@@ -45,6 +45,9 @@ export default function Home() {
   const [isImporting, setIsImporting] =
     useState(false)
 
+  const [loading, setLoading] =
+    useState(true)
+
   // 从 Supabase 读取
 
   useEffect(() => {
@@ -99,11 +102,17 @@ export default function Home() {
       setLeftPoem(randomLeft)
       setRightPoem(randomRight)
 
+      setLoading(false)
+
     }
 
     loadPoems()
 
   }, [])
+
+  if (loading) {
+    return null
+  }
 
   function updateTopPoem(updated: Poem[]) {
 
