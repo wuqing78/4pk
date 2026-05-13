@@ -14,12 +14,10 @@ type Poem = {
 }
 
 function getTitle(content: string) {
-
   return content
     .split('\n')[0]
     .replace(/[#《》]/g, '')
     .slice(0, 20)
-
 }
 
 export default function Home() {
@@ -36,19 +34,8 @@ export default function Home() {
   const [rightPoem, setRightPoem] =
     useState<Poem | null>(null)
 
-  const [showForm, setShowForm] =
-    useState(false)
-
-  const [newPoem, setNewPoem] =
-    useState('')
-
-  const [isImporting, setIsImporting] =
-    useState(false)
-
   const [loading, setLoading] =
     useState(true)
-
-  // 从 Supabase 读取
 
   useEffect(() => {
 
@@ -64,12 +51,18 @@ export default function Home() {
         console.error(
           JSON.stringify(error, null, 2)
         )
+
+        setLoading(false)
         return
- 
+
       }
 
-      if (!data || data.length < 2)
+      if (!data || data.length < 2) {
+
+        setLoading(false)
         return
+
+      }
 
       setAllPoems(data)
 
@@ -109,10 +102,6 @@ export default function Home() {
     loadPoems()
 
   }, [])
-
-  if (loading) {
-    return null
-  }
 
   function updateTopPoem(updated: Poem[]) {
 
@@ -215,185 +204,30 @@ export default function Home() {
 
   }
 
-  async function submitPoem() {
+  if (loading) {
 
-    if (!newPoem.trim())
-      return
+    return (
 
-    const { data, error } =
-      await supabase
-        .from('poems')
-        .insert([
-          {
-            content: newPoem,
-            rating: 1200,
-            wins: 0,
-            losses: 0
-          }
-        ])
-        .select()
+      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
 
-    if (error) {
+        <div className="text-neutral-500 text-sm tracking-[0.3em] uppercase">
+          Loading
+        </div>
 
-      console.error(error)
-      return
+      </main>
 
-    }
-
-    const poem = data[0]
-
-    const updated = [
-      ...allPoems,
-      poem
-    ]
-
-    setAllPoems(updated)
-
-    updateTopPoem(updated)
-
-    if (!leftPoem) {
-
-      setLeftPoem(poem)
-
-    } else if (!rightPoem) {
-
-      setRightPoem(poem)
-
-    }
-
-    setNewPoem('')
-    setShowForm(false)
+    )
 
   }
-
-  async function importTxtFile(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-
-    const file =
-      event.target.files?.[0]
-
-    if (!file)
-      return
-
-    setIsImporting(true)
-
-    const reader =
-      new FileReader()
-
-    reader.onload = async (e) => {
-
-      const text =
-        e.target?.result as string
-
-      const poems =
-        text
-          .split('===')
-          .map((p) => p.trim())
-          .filter(Boolean)
-
-      const imported =
-        poems.map((content) => ({
-          content,
-          rating: 1200,
-          wins: 0,
-          losses: 0
-        }))
-
-      const { data, error } =
-        await supabase
-          .from('poems')
-          .insert(imported)
-          .select()
-
-      if (error) {
-
-        console.error(error)
-        return
-
-      }
-
-      const updated = [
-        ...allPoems,
-        ...data
-      ]
-
-      setAllPoems(updated)
-
-      updateTopPoem(updated)
-
-      if (updated.length >= 2) {
-
-        const randomLeft =
-          updated[
-            Math.floor(
-              Math.random() * updated.length
-            )
-          ]
-
-        const remaining =
-          updated.filter(
-            (p) => p.id !== randomLeft.id
-          )
-
-        const randomRight =
-          remaining[
-            Math.floor(
-              Math.random() *
-              remaining.length
-            )
-          ]
-
-        setLeftPoem(randomLeft)
-        setRightPoem(randomRight)
-
-      }
-
-      setIsImporting(false)
-
-    }
-
-    reader.readAsText(file)
-
-  }
-
-  // 数据库为空
 
   if (!leftPoem || !rightPoem) {
 
     return (
 
-      <main className="min-h-screen bg-neutral-100 flex flex-col items-center justify-center px-6">
+      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
 
-        <h1 className="text-7xl font-bold mb-10">
-          4PK
-        </h1>
-
-        <label
-          className="
-            border-2 border-black
-            px-8 py-5
-            text-xl font-bold
-            hover:bg-black
-            hover:text-white
-            transition
-            cursor-pointer
-          "
-        >
-
-          导入 TXT
-
-          <input
-            type="file"
-            accept=".txt"
-            onChange={importTxtFile}
-            className="hidden"
-          />
-
-        </label>
-
-        <div className="mt-8 text-neutral-500">
-          请先导入诗歌 TXT 文件
+        <div className="text-neutral-500">
+          No poems
         </div>
 
       </main>
@@ -408,101 +242,15 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* 顶部 */}
-
         <div className="flex items-center justify-between mb-10">
 
           <h1 className="text-6xl font-bold tracking-tight">
             4PK
           </h1>
 
-          <div className="flex gap-4">
-
-            <label
-              className="
-                border border-black
-                px-5 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-                cursor-pointer
-              "
-            >
-
-              导入 TXT
-
-              <input
-                type="file"
-                accept=".txt"
-                onChange={importTxtFile}
-                className="hidden"
-              />
-
-            </label>
-
-            <button
-              onClick={() =>
-                setShowForm(!showForm)
-              }
-              className="
-                border border-black
-                px-5 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-              "
-            >
-              ＋ 投稿
-            </button>
-
-          </div>
+          <div></div>
 
         </div>
-
-        {/* 投稿 */}
-
-        {showForm && (
-
-          <div className="mb-10 max-w-2xl">
-
-            <textarea
-              value={newPoem}
-              onChange={(e) =>
-                setNewPoem(e.target.value)
-              }
-              placeholder="写下你的诗..."
-              className="
-                w-full
-                border border-black
-                bg-white
-                p-6
-                min-h-[180px]
-                resize-none
-                outline-none
-                text-lg
-                leading-9
-              "
-            />
-
-            <button
-              onClick={submitPoem}
-              className="
-                mt-4
-                border border-black
-                px-6 py-3
-                hover:bg-black
-                hover:text-white
-                transition
-              "
-            >
-              加入战场
-            </button>
-
-          </div>
-
-        )}
-
-        {/* PK */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
@@ -641,8 +389,6 @@ export default function Home() {
           </AnimatePresence>
 
         </div>
-
-        {/* 底部 */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
 
