@@ -52,7 +52,19 @@ export default function PoemPage() {
   }, [params.id])
 
   if (loading) {
-    return null
+
+    return (
+
+      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
+
+        <div className="text-neutral-500">
+          Loading...
+        </div>
+
+      </main>
+
+    )
+
   }
 
   if (!poem) {
@@ -77,18 +89,26 @@ export default function PoemPage() {
 
       <div className="max-w-3xl mx-auto">
 
-        <Link
-          href="/"
-          className="
-            inline-block
-            mb-12
-            text-sm
-            hover:opacity-60
-            transition
-          "
-        >
-          ← back
-        </Link>
+        {/* 顶部 */}
+
+        <div className="mb-16">
+
+          <Link
+            href="/"
+            className="inline-block"
+          >
+            <h1 className="text-5xl font-bold tracking-tight hover:opacity-70 transition">
+              诗PK
+            </h1>
+          </Link>
+
+          <div className="mt-3 text-sm text-neutral-500">
+            诗，无限的选择...
+          </div>
+
+        </div>
+
+        {/* 诗 */}
 
         <div className="border border-black bg-white p-10">
 
@@ -124,6 +144,12 @@ export default function PoemPage() {
 
           </div>
 
+        </div>
+
+        {/* 底部 */}
+
+        <div className="mt-24 text-center text-sm text-neutral-400">
+          4PK.org
         </div>
 
       </div>
