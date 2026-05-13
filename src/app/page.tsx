@@ -466,9 +466,112 @@ export default function Home() {
 
         {/* 底部 */}
 
-        <div className="mt-24 text-center text-sm text-neutral-400">
-          4PK.org
+        {/* 底部 */}
+
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
+
+  {topPoem && (
+
+    <div className="border border-black bg-white p-8">
+
+      <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
+        WORLD #1
+      </div>
+
+      <p className="text-2xl leading-[2] whitespace-pre-line break-words">
+        {topPoem.content}
+      </p>
+
+      <div className="mt-8 flex gap-10">
+
+        <div>
+
+          <div className="text-sm text-neutral-500 mb-2">
+            Rating
+          </div>
+
+          <div className="text-3xl font-bold">
+            {topPoem.rating}
+          </div>
+
         </div>
+
+        <div>
+
+          <div className="text-sm text-neutral-500 mb-2">
+            Record
+          </div>
+
+          <div className="text-3xl font-bold">
+            {topPoem.wins} / {topPoem.losses}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  )}
+
+  <div className="border border-black bg-white p-6">
+
+    <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-500 mb-6">
+      Top 20
+    </h2>
+
+    <div className="space-y-4">
+
+      {[...allPoems]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 20)
+        .map((poem, index) => (
+
+          <Link
+            href={`/poem/${poem.id}`}
+            key={poem.id}
+            className="
+              block
+              border-b border-neutral-300
+              pb-3
+              hover:opacity-70
+              transition
+            "
+          >
+
+            <div className="flex items-center justify-between">
+
+              <div className="flex gap-3 items-center">
+
+                <div className="text-sm font-bold">
+                  #{index + 1}
+                </div>
+
+                <div className="text-sm truncate max-w-[180px]">
+                  {getTitle(poem.content)}
+                </div>
+
+              </div>
+
+              <div className="text-xs text-neutral-500">
+                {poem.rating}
+              </div>
+
+            </div>
+
+          </Link>
+
+        ))}
+
+    </div>
+
+  </div>
+
+</div>
+
+<div className="mt-24 text-center text-sm text-neutral-400">
+  4PK.org
+</div>
 
       </div>
 
