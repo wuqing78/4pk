@@ -14,10 +14,12 @@ type Poem = {
 }
 
 function getTitle(content: string) {
+
   return content
     .split('\n')[0]
     .replace(/[#《》]/g, '')
     .slice(0, 20)
+
 }
 
 export default function Home() {
@@ -37,6 +39,8 @@ export default function Home() {
   const [loading, setLoading] =
     useState(true)
 
+  // 从 Supabase 读取
+
   useEffect(() => {
 
     async function loadPoems() {
@@ -48,11 +52,7 @@ export default function Home() {
 
       if (error) {
 
-        console.error(
-          JSON.stringify(error, null, 2)
-        )
-
-        setLoading(false)
+        console.error(error)
         return
 
       }
@@ -102,6 +102,10 @@ export default function Home() {
     loadPoems()
 
   }, [])
+
+  if (loading) {
+    return null
+  }
 
   function updateTopPoem(updated: Poem[]) {
 
@@ -204,22 +208,6 @@ export default function Home() {
 
   }
 
-  if (loading) {
-
-    return (
-
-      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
-
-        <div className="text-neutral-500 text-sm tracking-[0.3em] uppercase">
-          Loading
-        </div>
-
-      </main>
-
-    )
-
-  }
-
   if (!leftPoem || !rightPoem) {
 
     return (
@@ -227,7 +215,7 @@ export default function Home() {
       <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
 
         <div className="text-neutral-500">
-          No poems
+          Loading...
         </div>
 
       </main>
@@ -242,22 +230,33 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto">
 
-        <div className="flex items-center justify-between mb-10">
+        {/* 顶部 */}
 
-          <h1 className="text-6xl font-bold tracking-tight">
-            4PK
-          </h1>
+        <div className="mb-16">
 
-          <div></div>
+          <Link
+            href="/"
+            className="inline-block"
+          >
+            <h1 className="text-5xl font-bold tracking-tight hover:opacity-70 transition">
+              诗PK
+            </h1>
+          </Link>
+
+          <div className="mt-3 text-sm text-neutral-500">
+            诗，无限的选择...
+          </div>
 
         </div>
+
+        {/* PK */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           <AnimatePresence mode="wait">
 
             <motion.div
-              key={leftPoem.id + leftPoem.rating}
+              key={leftPoem.id}
               initial={{
                 opacity: 0,
                 y: 30,
@@ -324,7 +323,7 @@ export default function Home() {
           <AnimatePresence mode="wait">
 
             <motion.div
-              key={rightPoem.id + rightPoem.rating}
+              key={rightPoem.id}
               initial={{
                 opacity: 0,
                 y: 30,
@@ -389,6 +388,8 @@ export default function Home() {
           </AnimatePresence>
 
         </div>
+
+        {/* 底部 */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
 
@@ -489,6 +490,10 @@ export default function Home() {
 
           </div>
 
+        </div>
+
+        <div className="mt-24 text-center text-sm text-neutral-400">
+          4PK.org
         </div>
 
       </div>
