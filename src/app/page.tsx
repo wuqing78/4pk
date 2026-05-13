@@ -39,7 +39,11 @@ export default function Home() {
   const [loading, setLoading] =
     useState(true)
 
-  // 从 Supabase 读取
+  const [leftKey, setLeftKey] =
+    useState(0)
+
+  const [rightKey, setRightKey] =
+    useState(0)
 
   useEffect(() => {
 
@@ -57,12 +61,8 @@ export default function Home() {
 
       }
 
-      if (!data || data.length < 2) {
-
-        setLoading(false)
+      if (!data || data.length < 2)
         return
-
-      }
 
       setAllPoems(data)
 
@@ -104,7 +104,13 @@ export default function Home() {
   }, [])
 
   if (loading) {
-    return null
+
+    return (
+
+      <main className="min-h-screen bg-neutral-100" />
+
+    )
+
   }
 
   function updateTopPoem(updated: Poem[]) {
@@ -199,12 +205,79 @@ export default function Home() {
       setLeftPoem(updatedWinner)
       setRightPoem(next)
 
+      setRightKey((k) => k + 1)
+
     } else {
 
       setRightPoem(updatedWinner)
       setLeftPoem(next)
 
+      setLeftKey((k) => k + 1)
+
     }
+
+  }
+
+  async function importTxtFile(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+
+    const file =
+      event.target.files?.[0]
+
+    if (!file)
+      return
+
+    const reader =
+      new FileReader()
+
+    reader.onload = async (e) => {
+
+      const text =
+        e.target?.result as string
+
+      const poems =
+        text
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n')
+          .replace(/\u2028/g, '\n')
+          .split('===')
+          .map((p) => p.trim())
+          .filter(Boolean)
+
+      const imported =
+        poems.map((content) => ({
+          content,
+          rating: 1200,
+          wins: 0,
+          losses: 0
+        }))
+
+      const { data, error } =
+        await supabase
+          .from('poems')
+          .insert(imported)
+          .select()
+
+      if (error) {
+
+        console.error(error)
+        return
+
+      }
+
+      const updated = [
+        ...allPoems,
+        ...data
+      ]
+
+      setAllPoems(updated)
+
+      updateTopPoem(updated)
+
+    }
+
+    reader.readAsText(file)
 
   }
 
@@ -212,13 +285,7 @@ export default function Home() {
 
     return (
 
-      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
-
-        <div className="text-neutral-500">
-          Loading...
-        </div>
-
-      </main>
+      <main className="min-h-screen bg-neutral-100" />
 
     )
 
@@ -238,12 +305,14 @@ export default function Home() {
             href="/"
             className="inline-block"
           >
-            <h1 className="text-5xl font-bold tracking-tight hover:opacity-70 transition">
+
+            <h1 className="text-6xl font-bold tracking-tight hover:opacity-70 transition">
               诗PK
             </h1>
+
           </Link>
 
-          <div className="mt-3 text-sm text-neutral-500">
+          <div className="mt-3 text-xl text-neutral-500">
             诗，无限的选择...
           </div>
 
@@ -256,7 +325,7 @@ export default function Home() {
           <AnimatePresence mode="wait">
 
             <motion.div
-              key={leftPoem.id}
+              key={leftKey}
               initial={{
                 opacity: 0,
                 y: 30,
@@ -271,7 +340,7 @@ export default function Home() {
                 opacity: 0
               }}
               transition={{
-                duration: 0.45
+                duration: 0.35
               }}
               className="
                 border border-black
@@ -280,7 +349,7 @@ export default function Home() {
               "
             >
 
-              <p className="whitespace-pre-line text-2xl leading-[2.2]">
+              <p className="whitespace-pre-line break-words text-2xl leading-[2.2]">
                 {leftPoem.content}
               </p>
 
@@ -289,7 +358,7 @@ export default function Home() {
                 <div>
 
                   <div className="text-sm text-neutral-500">
-                    Rating {leftPoem.rating}
+                    评分 {leftPoem.rating}
                   </div>
 
                   <div className="text-sm text-neutral-500 mt-1">
@@ -308,6 +377,9 @@ export default function Home() {
                     text-lg font-bold
                     hover:bg-black
                     hover:text-white
+                    active:bg-black
+                    active:text-white
+                    active:scale-95
                     transition
                   "
                 >
@@ -323,7 +395,7 @@ export default function Home() {
           <AnimatePresence mode="wait">
 
             <motion.div
-              key={rightPoem.id}
+              key={rightKey}
               initial={{
                 opacity: 0,
                 y: 30,
@@ -338,7 +410,7 @@ export default function Home() {
                 opacity: 0
               }}
               transition={{
-                duration: 0.45
+                duration: 0.35
               }}
               className="
                 border border-black
@@ -347,7 +419,7 @@ export default function Home() {
               "
             >
 
-              <p className="whitespace-pre-line text-2xl leading-[2.2]">
+              <p className="whitespace-pre-line break-words text-2xl leading-[2.2]">
                 {rightPoem.content}
               </p>
 
@@ -363,6 +435,9 @@ export default function Home() {
                     text-lg font-bold
                     hover:bg-black
                     hover:text-white
+                    active:bg-black
+                    active:text-white
+                    active:scale-95
                     transition
                   "
                 >
@@ -372,7 +447,7 @@ export default function Home() {
                 <div className="text-right">
 
                   <div className="text-sm text-neutral-500">
-                    Rating {rightPoem.rating}
+                    评分 {rightPoem.rating}
                   </div>
 
                   <div className="text-sm text-neutral-500 mt-1">
@@ -390,107 +465,6 @@ export default function Home() {
         </div>
 
         {/* 底部 */}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-24">
-
-          {topPoem && (
-
-            <div className="border border-black bg-white p-8">
-
-              <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
-                WORLD #1
-              </div>
-
-              <p className="text-2xl leading-[2] whitespace-pre-line">
-                {topPoem.content}
-              </p>
-
-              <div className="mt-8 flex gap-10">
-
-                <div>
-
-                  <div className="text-sm text-neutral-500 mb-2">
-                    Rating
-                  </div>
-
-                  <div className="text-3xl font-bold">
-                    {topPoem.rating}
-                  </div>
-
-                </div>
-
-                <div>
-
-                  <div className="text-sm text-neutral-500 mb-2">
-                    Record
-                  </div>
-
-                  <div className="text-3xl font-bold">
-                    {topPoem.wins} / {topPoem.losses}
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          )}
-
-          <div className="border border-black bg-white p-6">
-
-            <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-500 mb-6">
-              Top 20
-            </h2>
-
-            <div className="space-y-4">
-
-              {[...allPoems]
-                .sort((a, b) => b.rating - a.rating)
-                .slice(0, 20)
-                .map((poem, index) => (
-
-                  <Link
-                    href={`/poem/${poem.id}`}
-                    key={poem.id}
-                    className="
-                      block
-                      border-b border-neutral-300
-                      pb-3
-                      hover:opacity-70
-                      transition
-                    "
-                  >
-
-                    <div className="flex items-center justify-between">
-
-                      <div className="flex gap-3 items-center">
-
-                        <div className="text-sm font-bold">
-                          #{index + 1}
-                        </div>
-
-                        <div className="text-sm truncate max-w-[180px]">
-                          {getTitle(poem.content)}
-                        </div>
-
-                      </div>
-
-                      <div className="text-xs text-neutral-500">
-                        {poem.rating}
-                      </div>
-
-                    </div>
-
-                  </Link>
-
-                ))}
-
-            </div>
-
-          </div>
-
-        </div>
 
         <div className="mt-24 text-center text-sm text-neutral-400">
           4PK.org
