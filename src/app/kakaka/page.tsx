@@ -109,40 +109,45 @@ export default function AdminPage() {
           .filter(Boolean)
 
       const imported =
-        poems.map((raw) => {
+  poems
+    .map((raw) => {
 
-          const lines =
-            raw
-              .split('\n')
-              .map((line) =>
-                line.trim()
-              )
+      const lines =
+        raw
+          .split('\n')
+          .map((line) =>
+            line.trim()
+          )
+          .filter(Boolean)
 
-          const firstLine =
-            lines[0]
+      const firstLine =
+        lines[0]
 
-          const author =
-            firstLine.startsWith('@')
-              ? firstLine.replace('@', '')
-              : '未知'
+      const author =
+        firstLine?.startsWith('@')
+          ? firstLine.replace('@', '')
+          : '未知'
 
-          const content =
-            lines
-              .slice(1)
-              .join('\n')
-              .trim()
+      const content =
+        lines
+          .slice(1)
+          .join('\n')
+          .trim()
 
-          return {
+      return {
 
-            author,
-            content,
-            rating: 1200,
-            wins: 0,
-            losses: 0
+        author,
+        content,
+        rating: 1200,
+        wins: 0,
+        losses: 0
 
-          }
+      }
 
-        })
+    })
+    .filter((poem) =>
+      poem.content.length > 0
+    )
 
       const { error } =
         await supabase
