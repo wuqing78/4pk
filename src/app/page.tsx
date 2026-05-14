@@ -44,7 +44,34 @@ export default function Home() {
 
   const [rightKey, setRightKey] =
     useState(0)
+function randomBattle(poems: Poem[]) {
 
+  const randomLeft =
+    poems[
+      Math.floor(
+        Math.random() * poems.length
+      )
+    ]
+
+  const remaining =
+    poems.filter(
+      (p) => p.id !== randomLeft.id
+    )
+
+  const randomRight =
+    remaining[
+      Math.floor(
+        Math.random() * remaining.length
+      )
+    ]
+
+  setLeftPoem(randomLeft)
+  setRightPoem(randomRight)
+
+  setLeftKey((k) => k + 1)
+  setRightKey((k) => k + 1)
+
+}
   useEffect(() => {
 
     async function loadPoems() {
@@ -73,27 +100,7 @@ export default function Home() {
 
       setTopPoem(top)
 
-      const randomLeft =
-        data[
-          Math.floor(
-            Math.random() * data.length
-          )
-        ]
-
-      const remaining =
-        data.filter(
-          (p) => p.id !== randomLeft.id
-        )
-
-      const randomRight =
-        remaining[
-          Math.floor(
-            Math.random() * remaining.length
-          )
-        ]
-
-      setLeftPoem(randomLeft)
-      setRightPoem(randomRight)
+      randomBattle(data)
 
       setLoading(false)
 
@@ -179,26 +186,77 @@ export default function Home() {
         (p) => p.id !== updatedWinner.id
       )
 
-    const sortedPool =
-      nextPool.sort((a, b) => {
+    let next
 
-        return Math.abs(
-          a.rating - updatedWinner.rating
-        ) - Math.abs(
-          b.rating - updatedWinner.rating
-        )
+const randomMode = Math.random()
+
+// 50% 全随机
+
+if (randomMode < 0.5) {
+
+  next =
+    nextPool[
+      Math.floor(
+        Math.random() * nextPool.length
+      )
+    ]
+
+}
+
+// 30% 接近 rating
+
+else if (randomMode < 0.8) {
+
+  const sortedPool =
+    [...nextPool].sort((a, b) => {
+
+      return Math.abs(
+        a.rating - updatedWinner.rating
+      ) - Math.abs(
+        b.rating - updatedWinner.rating
+      )
+
+    })
+
+  const candidates =
+    sortedPool.slice(0, 20)
+
+  next =
+    candidates[
+      Math.floor(
+        Math.random() * candidates.length
+      )
+    ]
+
+}
+
+// 20% 推冷门诗
+
+else {
+
+  const unpopular =
+    [...nextPool]
+      .sort((a, b) => {
+
+        const aGames =
+          a.wins + a.losses
+
+        const bGames =
+          b.wins + b.losses
+
+        return aGames - bGames
 
       })
+      .slice(0, 30)
 
-    const candidates =
-      sortedPool.slice(0, 5)
+  next =
+    unpopular[
+      Math.floor(
+        Math.random() * unpopular.length
+      )
+    ]
 
-    const next =
-      candidates[
-        Math.floor(
-          Math.random() * candidates.length
-        )
-      ]
+}
 
     if (winner.id === leftPoem?.id) {
 
@@ -299,24 +357,47 @@ export default function Home() {
 
         {/* 顶部 */}
 
-        <div className="mb-16">
+        <div className="flex items-start justify-between mb-16">
 
-          <Link
-            href="/"
-            className="inline-block"
-          >
+  <button
+    onClick={() =>
+      randomBattle(allPoems)
+    }
+    className="
+      text-sm
+      border border-black
+      px-4 py-2
+      hover:bg-black
+      hover:text-white
+      active:scale-95
+      transition
+    "
+  >
+    换一组
+  </button>
 
-            <h1 className="text-6xl font-bold tracking-tight hover:opacity-70 transition">
-              诗PK
-            </h1>
+  <div className="text-center">
 
-          </Link>
+    <Link
+      href="/"
+      className="inline-block"
+    >
 
-          <div className="mt-3 text-xl text-neutral-500">
-            诗，无限的选择...
-          </div>
+      <h1 className="text-6xl font-bold tracking-tight hover:opacity-70 transition">
+        诗PK
+      </h1>
 
-        </div>
+    </Link>
+
+    <div className="mt-3 text-xl text-neutral-500">
+      诗，无限的选择...
+    </div>
+
+  </div>
+
+  <div className="w-[88px]" />
+
+</div>
 
         {/* PK */}
 
