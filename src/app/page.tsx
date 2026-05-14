@@ -640,9 +640,17 @@ else {
                   #{index + 1}
                 </div>
 
-                <div className="text-sm truncate max-w-[180px]">
-                  {getTitle(poem.content)}
-                </div>
+               <div className="max-w-[180px]">
+
+  <div className="text-sm truncate font-bold">
+    {getTitle(poem.content)}
+  </div>
+
+  <div className="text-xs text-neutral-600 mt-1 truncate">
+    @{poem.author || '未知'}
+  </div>
+
+</div>
 
               </div>
 
