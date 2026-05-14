@@ -431,7 +431,7 @@ else {
               "
             >
 
-              <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-6">
+              <div className="text-base font-bold tracking-wide text-black/70 mb-8">
   @{leftPoem.author}
 </div>
 
@@ -505,7 +505,7 @@ else {
               "
             >
 
-              <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-6 text-right">
+              <div className="text-base font-bold tracking-wide text-black/70 mb-8">
   @{rightPoem.author}
 </div>
 
