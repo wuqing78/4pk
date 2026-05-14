@@ -115,10 +115,6 @@ export default function AdminPage() {
       const lines =
         raw
           .split('\n')
-          .map((line) =>
-            line.trim()
-          )
-          .filter(Boolean)
 
       const firstLine =
         lines[0]
