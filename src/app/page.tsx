@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase'
 type Poem = {
   id: number
   content: string
+  author: string
   rating: number
   wins: number
   losses: number
@@ -430,9 +431,13 @@ else {
               "
             >
 
-              <p className="whitespace-pre-line break-words text-2xl leading-[2.2]">
-                {leftPoem.content}
-              </p>
+              <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-6">
+  @{leftPoem.author}
+</div>
+
+<p className="whitespace-pre-line text-2xl leading-[2.2] break-words">
+  {leftPoem.content}
+</p>
 
               <div className="mt-10 flex items-center justify-between">
 
@@ -500,9 +505,13 @@ else {
               "
             >
 
-              <p className="whitespace-pre-line break-words text-2xl leading-[2.2]">
-                {rightPoem.content}
-              </p>
+              <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-6 text-right">
+  @{rightPoem.author}
+</div>
+
+<p className="whitespace-pre-line text-2xl leading-[2.2] break-words">
+  {rightPoem.content}
+</p>
 
               <div className="mt-10 flex items-center justify-between">
 
@@ -558,7 +567,10 @@ else {
       <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
         WORLD #1
       </div>
-
+      
+<div className="text-sm font-semibold tracking-wide text-neutral-500 mb-5">
+  @{topPoem.author}
+</div>
       <p className="text-2xl leading-[2] whitespace-pre-line break-words">
         {topPoem.content}
       </p>
