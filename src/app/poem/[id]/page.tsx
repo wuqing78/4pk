@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase'
 type Poem = {
   id: number
   content: string
+  author: string
   rating: number
   wins: number
   losses: number
@@ -112,7 +113,11 @@ export default function PoemPage() {
 
         <div className="border border-black bg-white p-10">
 
-          <div className="whitespace-pre-line text-3xl leading-[2.2]">
+          <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-8">
+            @{poem.author}
+          </div>
+
+          <div className="whitespace-pre-line break-words text-3xl leading-[2.2]">
             {poem.content}
           </div>
 
