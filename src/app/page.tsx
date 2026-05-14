@@ -568,7 +568,7 @@ else {
         WORLD #1
       </div>
       
-<div className="text-sm font-semibold tracking-wide text-neutral-500 mb-5">
+<div className="text-base font-bold tracking-wide text-black/70 mb-6">
   @{topPoem.author}
 </div>
       <p className="text-2xl leading-[2] whitespace-pre-line break-words">
