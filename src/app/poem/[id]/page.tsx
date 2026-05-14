@@ -113,9 +113,9 @@ export default function PoemPage() {
 
         <div className="border border-black bg-white p-10">
 
-          <div className="text-sm font-semibold tracking-wide text-neutral-500 mb-8">
-            @{poem.author}
-          </div>
+          <div className="text-base font-bold tracking-wide text-black/70 mb-10">
+  @{poem.author}
+</div>
 
           <div className="whitespace-pre-line break-words text-3xl leading-[2.2]">
             {poem.content}
