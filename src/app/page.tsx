@@ -13,7 +13,6 @@ type Poem = {
   wins: number
   losses: number
 }
-
 function getTitle(content: string) {
 
   return content
@@ -23,11 +22,27 @@ function getTitle(content: string) {
 
 }
 
+function getHotNow(poems: Poem[]) {
+
+  return [...poems]
+    .sort((a, b) => {
+
+      const aScore =
+        (a.wins + a.losses) * 2 + a.rating
+
+      const bScore =
+        (b.wins + b.losses) * 2 + b.rating
+
+      return bScore - aScore
+
+    })[0]
+
+}
+
 export default function Home() {
 
   const [allPoems, setAllPoems] =
     useState<Poem[]>([])
-
   const [topPoem, setTopPoem] =
     useState<Poem | null>(null)
 
@@ -576,14 +591,14 @@ else {
     <div className="border border-black bg-white p-8">
 
       <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
-        WORLD #1
+        HOT NOW
       </div>
       
 <div className="text-base font-bold tracking-wide text-black/70 mb-6">
-  @{topPoem.author}
+  @{getHotNow(allPoems)?.author}
 </div>
       <p className="text-2xl leading-[2] whitespace-pre-line break-words">
-        {topPoem.content}
+        {getHotNow(allPoems)?.content}
       </p>
 
       <div className="mt-8 flex gap-10">
@@ -595,7 +610,7 @@ else {
           </div>
 
           <div className="text-3xl font-bold">
-            {topPoem.rating}
+            {getHotNow(allPoems)?.rating}
           </div>
 
         </div>
@@ -607,7 +622,9 @@ else {
           </div>
 
           <div className="text-3xl font-bold">
-            {topPoem.wins} / {topPoem.losses}
+            {getHotNow(allPoems)?.wins}
+/
+{getHotNow(allPoems)?.losses}
           </div>
 
         </div>
