@@ -742,7 +742,7 @@ else {
                 {poem.rating}
               </div>
 
-            </div>
+           
 
           </Link>
 
