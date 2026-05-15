@@ -429,11 +429,14 @@ else {
               transition={{
                 duration: 0.35
               }}
-              className="
-                border border-black
-                bg-white
-                p-8
-              "
+              className={`
+  border p-8
+  ${
+    darkMode
+      ? 'border-neutral-700 bg-neutral-900 text-white'
+      : 'border-black bg-white text-black'
+  }
+`}
             >
 
               <div className="text-base font-bold tracking-wide text-black/70 mb-8">
@@ -463,7 +466,7 @@ else {
                     vote(leftPoem, rightPoem)
                   }
                   className="
-                    border-2 border-black
+                    border-2 border-neutral-500
                     px-8 py-4
                     text-lg font-bold
                     hover:bg-black
@@ -503,11 +506,14 @@ else {
               transition={{
                 duration: 0.35
               }}
-              className="
-                border border-black
-                bg-white
-                p-8
-              "
+             className={`
+  border p-8
+  ${
+    darkMode
+      ? 'border-neutral-700 bg-neutral-900 text-white'
+      : 'border-black bg-white text-black'
+  }
+`}
             >
 
               <div className="text-base font-bold tracking-wide text-black/70 mb-8">
@@ -525,7 +531,7 @@ else {
                     vote(rightPoem, leftPoem)
                   }
                   className="
-                    border-2 border-black
+                    border-2 border-neutral-500
                     px-8 py-4
                     text-lg font-bold
                     hover:bg-black
