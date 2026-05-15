@@ -688,19 +688,6 @@ else {
 })()}
 
        
-
-        <div>
-
-          <div className="text-sm text-neutral-500 mb-2">
-            Record
-          </div>
-
-          <div className="text-3xl font-bold">
-            {topPoem.wins} / {topPoem.losses}
-          </div>
-</div>
-        </div>
-})()}
       
 
 
