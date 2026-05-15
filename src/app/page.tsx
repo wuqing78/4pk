@@ -454,7 +454,7 @@ else {
 `}
             >
 
-              <div className="text-base font-bold tracking-wide text-black/70 mb-8">
+              <div className="text-base font-bold tracking-wide text-white/70 mb-6">
   @{leftPoem.author}
 </div>
 
@@ -531,7 +531,7 @@ else {
 `}
             >
 
-              <div className="text-base font-bold tracking-wide text-black/70 mb-8">
+              <div className="text-base font-bold tracking-wide text-white/70 mb-6">
   @{rightPoem.author}
 </div>
 
@@ -588,16 +588,16 @@ else {
 
   {topPoem && (
 
-    <div className="border border-black bg-white p-8">
+    <div className="border border-neutral-800 bg-neutral-900 p-8">
 
-      <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
+      <div className="text-xs uppercase tracking-[0.4em] text-neutral-400 mb-5">
         HOT NOW
       </div>
       
-<div className="text-base font-bold tracking-wide text-black/70 mb-6">
+<div className="text-base font-bold tracking-wide text-white/70 mb-6">
   @{getHotNow(allPoems)?.author}
 </div>
-      <p className="text-2xl leading-[2] whitespace-pre-line break-words">
+      <p className="text-2xl leading-[2] whitespace-pre-line break-words text-white">
         {getHotNow(allPoems)?.content}
       </p>
 
@@ -635,9 +635,9 @@ else {
 
   )}
 
-  <div className="border border-black bg-white p-6">
-
-    <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-500 mb-6">
+  <div className="border border-neutral-800 bg-neutral-900 p-6">
+    
+    <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-400 mb-6">
       Top 20
     </h2>
 
@@ -652,19 +652,20 @@ else {
             href={`/poem/${poem.id}`}
             key={poem.id}
             className="
-              block
-              border-b border-neutral-300
-              pb-3
-              hover:opacity-70
-              transition
-            "
+              className="
+  block
+  border-b border-neutral-800
+  pb-3
+  hover:bg-neutral-800
+  transition
+"
           >
 
             <div className="flex items-center justify-between">
 
               <div className="flex gap-3 items-center">
 
-                <div className="text-sm font-bold">
+                <div className="text-sm font-bold text-white">
                   #{index + 1}
                 </div>
 
@@ -682,7 +683,7 @@ else {
 
               </div>
 
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs text-neutral-400">
                 {poem.rating}
               </div>
 
