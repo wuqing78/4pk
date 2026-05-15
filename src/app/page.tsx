@@ -651,7 +651,7 @@ else {
           <Link
             href={`/poem/${poem.id}`}
             key={poem.id}
-            className="
+            
               className="
   block
   border-b border-neutral-800
