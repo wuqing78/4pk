@@ -700,12 +700,9 @@ else {
           </div>
 </div>
         </div>
-
+})()}
       
 
-    </div>
-
-  )}
 
   <div className="border border-black bg-white p-6">
 
