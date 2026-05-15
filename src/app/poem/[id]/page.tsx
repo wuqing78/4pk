@@ -56,9 +56,9 @@ export default function PoemPage() {
 
     return (
 
-      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
+      <main className="min-h-screen bg-black flex items-center justify-center">
 
-        <div className="text-neutral-500">
+        <div className="text-neutral-400">
           Loading...
         </div>
 
@@ -72,9 +72,9 @@ export default function PoemPage() {
 
     return (
 
-      <main className="min-h-screen bg-neutral-100 flex items-center justify-center">
+      <main className="min-h-screen bg-black flex items-center justify-center">
 
-        <div className="text-neutral-500">
+        <div className="text-neutral-400">
           poem not found
         </div>
 
@@ -86,7 +86,7 @@ export default function PoemPage() {
 
   return (
 
-    <main className="min-h-screen bg-neutral-100 text-black px-6 py-16">
+    <main className="min-h-screen bg-black text-white px-6 py-16">
 
       <div className="max-w-3xl mx-auto">
 
@@ -98,12 +98,14 @@ export default function PoemPage() {
             href="/"
             className="inline-block"
           >
+
             <h1 className="text-5xl font-bold tracking-tight hover:opacity-70 transition">
               诗PK
             </h1>
+
           </Link>
 
-          <div className="mt-3 text-sm text-neutral-500">
+          <div className="mt-3 text-sm text-neutral-400">
             诗，无限的选择...
           </div>
 
@@ -111,13 +113,13 @@ export default function PoemPage() {
 
         {/* 诗 */}
 
-        <div className="border border-black bg-white p-10">
+        <div className="border border-neutral-800 bg-neutral-900 p-10">
 
-          <div className="text-base font-bold tracking-wide text-black/70 mb-10">
-  @{poem.author}
-</div>
+          <div className="text-base font-bold tracking-wide text-white/70 mb-10">
+            @{poem.author}
+          </div>
 
-          <div className="whitespace-pre-line break-words text-3xl leading-[2.2]">
+          <div className="whitespace-pre-line break-words text-3xl leading-[2.2] text-white">
             {poem.content}
           </div>
 
@@ -125,7 +127,7 @@ export default function PoemPage() {
 
             <div>
 
-              <div className="text-sm text-neutral-500 mb-2">
+              <div className="text-sm text-neutral-400 mb-2">
                 Rating
               </div>
 
@@ -137,7 +139,7 @@ export default function PoemPage() {
 
             <div>
 
-              <div className="text-sm text-neutral-500 mb-2">
+              <div className="text-sm text-neutral-400 mb-2">
                 Record
               </div>
 
@@ -153,7 +155,7 @@ export default function PoemPage() {
 
         {/* 底部 */}
 
-        <div className="mt-24 text-center text-sm text-neutral-400">
+        <div className="mt-24 text-center text-sm text-neutral-500">
           4PK.org
         </div>
 
