@@ -50,6 +50,8 @@ export default function Home() {
   const [topPoem, setTopPoem] =
     useState<Poem | null>(null)
 
+  const hotNow = hotNow
+
   const [leftPoem, setLeftPoem] =
     useState<Poem | null>(null)
 
@@ -599,10 +601,10 @@ else {
       </div>
       
 <div className="text-base font-bold tracking-wide text-white/70 mb-6">
-  @{getHotNow(allPoems)?.author}
+  @{hotNow?.author}
 </div>
       <p className="text-2xl leading-[2] whitespace-pre-line break-words text-white">
-        {getHotNow(allPoems)?.content}
+        {hotNow?.content}
       </p>
 
       <div className="mt-8 flex gap-10">
@@ -614,7 +616,7 @@ else {
           </div>
 
           <div className="text-3xl font-bold">
-            {getHotNow(allPoems)?.rating}
+            {hotNow?.rating}
           </div>
 
         </div>
@@ -626,9 +628,9 @@ else {
           </div>
 
           <div className="text-3xl font-bold">
-            {getHotNow(allPoems)?.wins}
+            {hotNow?.wins}
 /
-{getHotNow(allPoems)?.losses}
+{hotNow?.losses}
           </div>
 
         </div>
