@@ -24,21 +24,25 @@ function getTitle(content: string) {
 
 function getHotNow(poems: Poem[]) {
 
+  if (!poems.length) return null
+
   return [...poems]
+    .filter(
+      (p) => (p.wins + p.losses) >= 10
+    )
     .sort((a, b) => {
 
-      const aScore =
-        (a.wins + a.losses) * 2 + a.rating
+      const aRate =
+        a.wins / (a.wins + a.losses)
 
-      const bScore =
-        (b.wins + b.losses) * 2 + b.rating
+      const bRate =
+        b.wins / (b.wins + b.losses)
 
-      return bScore - aScore
+      return bRate - aRate
 
     })[0]
 
 }
-
 export default function Home() {
 
   const [allPoems, setAllPoems] =
