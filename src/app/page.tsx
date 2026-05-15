@@ -698,7 +698,7 @@ else {
           <div className="text-3xl font-bold">
             {topPoem.wins} / {topPoem.losses}
           </div>
-
+</div>
         </div>
 
       </div>
