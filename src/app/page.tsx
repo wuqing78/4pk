@@ -748,15 +748,15 @@ else {
 
         ))}
 </div>
-    </div>
+   
 
 
-</div>
+
 <div className="mt-24 text-center text-sm text-neutral-400">
   4PK.org
 </div>
 
-      </div>
+      
 
     </main>
 
