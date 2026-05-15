@@ -386,9 +386,9 @@ else {
     }
     className="
       text-sm
-      border border-black
+      border border-neutral-600
       px-4 py-2
-      hover:bg-black
+      hover:bg-neutral-800
       hover:text-white
       active:scale-95
       transition
@@ -675,7 +675,7 @@ else {
     {getTitle(poem.content)}
   </div>
 
-  <div className="text-xs text-neutral-600 mt-1 truncate">
+  <div className="text-xs text-neutral-400 mt-1 truncate">
     @{poem.author || '未知'}
   </div>
 
