@@ -105,7 +105,7 @@ function randomBattle(poems: Poem[]) {
   )
 
 }, [darkMode])
-
+useEffect(() => {
     async function loadPoems() {
 
       const { data, error } =
