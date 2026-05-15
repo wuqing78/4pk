@@ -352,8 +352,13 @@ else {
 
   return (
 
-    <main className="min-h-screen bg-neutral-100 text-black px-6 py-12">
-
+    <main
+  className={`min-h-screen px-6 py-12 ${
+    darkMode
+      ? 'bg-black text-white'
+      : 'bg-neutral-100 text-black'
+  }`}
+>
       <div className="max-w-7xl mx-auto">
 
         {/* 顶部 */}
