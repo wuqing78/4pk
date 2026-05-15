@@ -50,7 +50,7 @@ export default function Home() {
   const [topPoem, setTopPoem] =
     useState<Poem | null>(null)
 
-  const hotNow = hotNow
+  const hotNow = getHotNow(allPoems)
 
   const [leftPoem, setLeftPoem] =
     useState<Poem | null>(null)
