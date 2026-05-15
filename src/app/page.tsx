@@ -24,7 +24,10 @@ function getTitle(content: string) {
 }
 
 export default function Home() {
-
+  
+  const [darkMode, setDarkMode] =
+  useState(false)
+  
   const [allPoems, setAllPoems] =
     useState<Poem[]>([])
 
@@ -74,6 +77,34 @@ function randomBattle(poems: Poem[]) {
 
 }
   useEffect(() => {
+
+  const saved =
+    localStorage.getItem('dark-mode')
+
+  if (saved !== null) {
+
+    setDarkMode(saved === 'true')
+
+  } else {
+
+    const prefersDark =
+      window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches
+
+    setDarkMode(prefersDark)
+
+  }
+
+}, [])
+  useEffect(() => {
+
+  localStorage.setItem(
+    'dark-mode',
+    String(darkMode)
+  )
+
+}, [darkMode])
 
     async function loadPoems() {
 
@@ -352,8 +383,21 @@ else {
 
   return (
 
-    <main className="min-h-screen bg-neutral-100 text-black px-6 py-12">
+    <main
+  className={`
+    min-h-screen
+    px-6
+    py-12
+    transition-colors
+    duration-500
 
+    ${
+      darkMode
+        ? 'bg-black text-neutral-100'
+        : 'bg-neutral-100 text-black'
+    }
+  `}
+>
       <div className="max-w-7xl mx-auto">
 
         {/* 顶部 */}
@@ -396,7 +440,26 @@ else {
 
   </div>
 
-  <div className="w-[88px]" />
+  <div className="w-[88px] flex justify-end">
+
+  <button
+    onClick={() =>
+      setDarkMode(!darkMode)
+    }
+    className="
+      text-lg
+      opacity-40
+      hover:opacity-100
+      transition
+      select-none
+    "
+  >
+
+    {darkMode ? '☀︎' : '☾'}
+
+  </button>
+
+</div>
 
 </div>
 
@@ -564,28 +627,65 @@ else {
 
     <div className="border border-black bg-white p-8">
 
-      <div className="text-xs uppercase tracking-[0.4em] text-neutral-500 mb-5">
-        WORLD #1
+      {/* HOT NOW */}
+
+{(() => {
+
+  const hotPoem =
+    [...poems]
+      .filter(
+        (p) => p.wins >= 5
+      )
+      .sort((a, b) => {
+
+        const scoreA =
+          a.wins / (a.losses + 1)
+
+        const scoreB =
+          b.wins / (b.losses + 1)
+
+        return scoreB - scoreA
+
+      })[0]
+
+  if (!hotPoem)
+    return null
+
+  return (
+
+    <Link
+      href={`/poem/${hotPoem.id}`}
+      className="
+        border border-black
+        p-5
+        hover:bg-black
+        hover:text-white
+        transition
+        block
+      "
+    >
+
+      <div className="text-xs tracking-widest mb-3 opacity-50">
+        HOT NOW
       </div>
-      
-<div className="text-base font-bold tracking-wide text-black/70 mb-6">
-  @{topPoem.author}
-</div>
-      <p className="text-2xl leading-[2] whitespace-pre-line break-words">
-        {topPoem.content}
-      </p>
 
-      <div className="mt-8 flex gap-10">
+      <div className="font-bold text-lg leading-relaxed">
+        {getTitle(hotPoem.content)}
+      </div>
 
-        <div>
+      <div className="text-sm mt-2 opacity-70">
+        @{hotPoem.author || '未知'}
+      </div>
 
-          <div className="text-sm text-neutral-500 mb-2">
-            Rating
-          </div>
+      <div className="text-sm mt-4 opacity-60">
+        {hotPoem.wins} 胜 · {hotPoem.losses} 负
+      </div>
 
-          <div className="text-3xl font-bold">
-            {topPoem.rating}
-          </div>
+    </Link>
+
+  )
+
+})()}
 
         </div>
 
