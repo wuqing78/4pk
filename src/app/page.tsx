@@ -747,7 +747,7 @@ else {
           </Link>
 
         ))}
-
+</div>
     </div>
 
   </div>
