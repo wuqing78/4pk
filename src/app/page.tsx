@@ -704,61 +704,68 @@ else {
         .slice(0, 20)
         .map((poem, index) => (
 
-          <Link
-            href={`/poem/${poem.id}`}
-            key={poem.id}
-            className="
-              block
-              border-b border-neutral-300
-              pb-3
-              hover:opacity-70
-              transition
-            "
-          >
+<div className="border border-black bg-white p-6">
 
-            <div className="flex items-center justify-between">
+  <h2 className="text-sm uppercase tracking-[0.3em] text-neutral-500 mb-6">
+    Top 20
+  </h2>
 
-              <div className="flex gap-3 items-center">
+  <div className="space-y-4">
 
-                <div className="text-sm font-bold">
-                  #{index + 1}
+    {[...allPoems]
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 20)
+      .map((poem, index) => (
+
+        <Link
+          key={poem.id}
+          href={`/poem/${poem.id}`}
+          className="block border border-black p-4 hover:bg-neutral-100 transition"
+        >
+
+          <div className="flex items-center justify-between">
+
+            <div className="flex gap-3 items-center">
+
+              <div className="text-sm font-bold">
+                #{index + 1}
+              </div>
+
+              <div>
+
+                <div className="text-sm font-bold truncate max-w-[180px]">
+                  {getTitle(poem.content)}
                 </div>
 
-               <div className="max-w-[180px]">
-
-  <div className="text-sm truncate font-bold">
-    {getTitle(poem.content)}
-  </div>
-
-  <div className="text-xs text-neutral-600 mt-1 truncate">
-    @{poem.author || '未知'}
-  </div>
-
-</div>
+                <div className="text-xs text-neutral-500">
+                  @{poem.author}
+                </div>
 
               </div>
 
-              <div className="text-xs text-neutral-500">
-                {poem.rating}
-              </div>
+            </div>
 
-           
+            <div className="text-xs text-neutral-500">
+              {poem.rating}
+            </div>
 
-          </Link>
+          </div>
 
-        ))}
+        </Link>
+
+      ))}
+
+  </div>
+
 </div>
-   
-
-
 
 <div className="mt-24 text-center text-sm text-neutral-400">
   4PK.org
 </div>
 
-      
+</div>
 
-    </main>
+</main>
 
   )
 
